@@ -14,19 +14,18 @@ public class GameManager : MonoBehaviour
 
     private bool gameEnded = false;
 
+    
+    [Header("Menu")]
+    public PlayButtonUI menuUI;
+    public float returnDelay = 3f;
+
+
     private void Start()
     {
         NewGame();
     }
 
-    private void Update()
-    {
-        // After winning or losing, press any key to restart
-        if (gameEnded && Input.anyKeyDown)
-        {
-            NewGame();
-        }
-    }
+
 
     private void NewGame()
     {
@@ -121,26 +120,46 @@ public class GameManager : MonoBehaviour
     }
 
     private void WinGame()
-    {
-        gameEnded = true;
+{
+    if (gameEnded) return;
 
-        if (winText != null)
-        {
-            winText.SetActive(true);
-        }
+    gameEnded = true;
 
-        Time.timeScale = 0f;
-    }
+    if (winText != null)
+        winText.SetActive(true);
 
-    private void GameOver()
-    {
-        gameEnded = true;
+    Time.timeScale = 0f;
 
-        if (gameOverText != null)
-        {
-            gameOverText.SetActive(true);
-        }
+    StartCoroutine(ReturnToMenuAfterDelay());
+}
 
-        Time.timeScale = 0f;
-    }
+private void GameOver()
+{
+    if (gameEnded) return;
+
+    gameEnded = true;
+
+    if (gameOverText != null)
+        gameOverText.SetActive(true);
+
+    Time.timeScale = 0f;
+
+    StartCoroutine(ReturnToMenuAfterDelay());
+}
+
+private System.Collections.IEnumerator ReturnToMenuAfterDelay()
+{
+    yield return new WaitForSecondsRealtime(returnDelay);
+
+    if (menuUI != null)
+        menuUI.ReturnToMenu();
+}
+
+    
+public void StartNewGame()
+{
+    CancelInvoke();
+    NewGame();
+}
+
 }
